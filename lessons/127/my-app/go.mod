@@ -1,4 +1,4 @@
-module github.com/antonputra/tutorials/lessons/127/my-app
+module github.com/xjsophos/tutorials/lessons/127/my-app
 
 go 1.19
 
