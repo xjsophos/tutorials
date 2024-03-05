@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -33,11 +35,63 @@ func ping(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "pong"})
 }
 
+func getAppHostname(url string) (string, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return "", err
+	}
+	return string(body), err
+}
+
+func app1(c *gin.Context) {
+	url := "https://poc-app-2-cloudhub-eu-west-1.dev.hydra.sophos.com/hostname"
+	resp, err := getAppHostname(url)
+
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"response": resp})
+}
+
+func app2(c *gin.Context) {
+	url := "https://poc-app-2-cloudhub-eu-west-1.dev.hydra.sophos.com/hostname"
+	resp, err := getAppHostname(url)
+
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"response": resp})
+}
+
+func app3(c *gin.Context) {
+	url := "https://poc-app-3-cloudhub-eu-west-1.dev.hydra.sophos.com/hostname"
+	resp, err := getAppHostname(url)
+
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"response": resp})
+}
+
 func mainRouter() http.Handler {
 	engine := gin.New()
 	engine.Use(gin.Recovery())
 	engine.GET("/hostname", getHostname)
 	engine.GET("/ping", ping)
+	engine.GET("/app1", app1)
+	engine.GET("/app2", app2)
+	engine.GET("/app3", app3)
 	return engine
 }
 
